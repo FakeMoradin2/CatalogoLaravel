@@ -36,6 +36,20 @@
                     <span class="text-sm font-medium text-slate-500">Existencia:</span>
                     <span class="text-lg font-semibold text-slate-800">{{ $producto['stock'] ?? 0 }} unidades</span>
                 </div>
+
+                <form action="{{ route('carrito.agregar') }}" method="POST" class="mt-8 flex flex-wrap items-center gap-4">
+                    @csrf
+                    <input type="hidden" name="id" value="{{ $producto['id'] ?? '' }}">
+                    <input type="hidden" name="title" value="{{ $producto['title'] ?? '' }}">
+                    <input type="hidden" name="price" value="{{ $producto['price'] ?? 0 }}">
+                    <input type="hidden" name="image" value="{{ $producto['thumbnail'] ?? ($producto['images'][0] ?? '') }}">
+                    <label for="quantity" class="text-sm font-medium text-slate-600">Cantidad:</label>
+                    <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ min(99, $producto['stock'] ?? 99) }}"
+                        class="w-20 px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <button type="submit" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition shadow">
+                        Agregar al carrito
+                    </button>
+                </form>
             </div>
         </div>
     </div>

@@ -1,0 +1,111 @@
+@extends('layouts.app')
+
+@section('title', 'Carrito de compras')
+
+@section('content')
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-slate-800 mb-8">Carrito de compras</h1>
+
+    @if (session('success'))
+        <div class="mb-6 p-4 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-200">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="mb-6 p-4 rounded-lg bg-red-100 text-red-800 border border-red-200">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if(empty($carrito))
+        <div class="bg-white rounded-lg shadow p-12 text-center">
+            <p class="text-slate-600 mb-6">Tu carrito está vacío.</p>
+            <a href="{{ route('productos.index') }}" class="inline-block px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition">
+                Ver catálogo de productos
+            </a>
+        </div>
+    @else
+        <div class="bg-white rounded-lg shadow overflow-hidden border border-slate-200">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr class="text-left text-sm font-medium text-slate-600">
+                            <th class="px-4 py-3">Imagen</th>
+                            <th class="px-4 py-3">Producto</th>
+                            <th class="px-4 py-3">Precio</th>
+                            <th class="px-4 py-3">Cantidad</th>
+                            <th class="px-4 py-3">Subtotal</th>
+                            <th class="px-4 py-3 w-20"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php $total = 0; @endphp
+                        @foreach($carrito as $item)
+                        @php
+                            $subtotal = $item['price'] * $item['quantity'];
+                            $total += $subtotal;
+                        @endphp
+                        <tr class="border-b border-slate-100 hover:bg-slate-50/50">
+                            <td class="px-4 py-4">
+                                <div class="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                                    @if(!empty($item['image']))
+                                        <img src="{{ $item['image'] }}" alt="{{ $item['title'] }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-slate-400 text-xs">Sin imagen</div>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-4 py-4">
+                                <a href="{{ route('productos.show', $item['id']) }}" class="font-medium text-slate-800 hover:text-indigo-600">
+                                    {{ $item['title'] }}
+                                </a>
+                            </td>
+                            <td class="px-4 py-4 text-slate-700">${{ number_format($item['price'], 2) }}</td>
+                            <td class="px-4 py-4">
+                                <form action="{{ route('carrito.actualizar', $item['id']) }}" method="POST" class="inline-flex items-center gap-2">
+                                    @csrf
+                                    <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" max="99"
+                                        class="w-16 px-2 py-1.5 text-sm rounded border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <button type="submit" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium" title="Actualizar">
+                                        Actualizar
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="px-4 py-4 font-semibold text-indigo-600">${{ number_format($subtotal, 2) }}</td>
+                            <td class="px-4 py-4">
+                                <form action="{{ route('carrito.eliminar', $item['id']) }}" method="POST" onsubmit="return confirm('¿Eliminar este producto del carrito?')">
+                                    @csrf
+                                    <button type="submit" class="text-red-600 hover:text-red-800 p-1" title="Eliminar">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="px-4 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="text-lg font-bold text-slate-800">
+                    Total: <span class="text-indigo-600">${{ number_format($total, 2) }}</span>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <form action="{{ route('carrito.vaciar') }}" method="POST" onsubmit="return confirm('¿Vaciar completamente el carrito?')">
+                        @csrf
+                        <button type="submit" class="px-4 py-2 text-slate-600 hover:text-red-600 font-medium transition border border-slate-300 rounded-lg hover:border-red-300">
+                            Vaciar carrito
+                        </button>
+                    </form>
+                    <a href="{{ route('productos.index') }}" class="px-4 py-2 text-indigo-600 hover:text-indigo-800 font-medium transition">
+                        Seguir comprando
+                    </a>
+                </div>
+            </div>
+        </div>
+    @endif
+</div>
+@endsection
