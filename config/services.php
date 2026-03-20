@@ -39,4 +39,14 @@ return [
         'url' => env('PRODUCTOS_API_URL', 'http://127.0.0.1:8001/api'),
     ],
 
+    'auth_api' => [
+        'url' => env('AUTH_API_URL', env('PRODUCTOS_API_URL', 'http://127.0.0.1:8001/api')),
+        'register' => env('AUTH_API_REGISTER_ENDPOINT', '/register'),
+        'login' => env('AUTH_API_LOGIN_ENDPOINT', '/login'),
+        'logout' => env('AUTH_API_LOGOUT_ENDPOINT', '/logout'),
+        'profile' => env('AUTH_API_PROFILE_ENDPOINT', '/profile'),
+        'avatar' => env('AUTH_API_AVATAR_ENDPOINT', '/profile/avatar'),
+        'password' => env('AUTH_API_PASSWORD_ENDPOINT', '/profile/password'),
+    ],
+
 ];

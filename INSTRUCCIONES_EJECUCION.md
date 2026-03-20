@@ -4,7 +4,7 @@
 
 ```
 proyectos/
-├── LaravelCatalogo/     ← Cliente (frontend + carrito) - puerto 8000
+├── LaravelCatalogo/     ← Cliente (frontend + carrito público + usuarios) - puerto 8000
 └── CatalogoAPI/         ← Backend API (productos) - puerto 8001
 ```
 
@@ -13,7 +13,7 @@ proyectos/
 | Proyecto | Puerto | Ubicación |
 |----------|--------|-----------|
 | **API Backend** (productos) | **8001** | `../CatalogoAPI/` |
-| **Cliente Laravel** (catálogo + carrito) | **8000** | `LaravelCatalogo/` (este proyecto) |
+| **Cliente Laravel** (catálogo + carrito + auth) | **8000** | `LaravelCatalogo/` (este proyecto) |
 
 ## Pasos para ejecutar
 
@@ -50,3 +50,20 @@ Abrir **http://127.0.0.1:8000** en el navegador.
 
 - Los productos se consumen desde la API en puerto 8001
 - El carrito se guarda en sesión (sin base de datos en el cliente)
+- El registro/login/perfil usan token de la API (guardado en sesión del cliente)
+
+## Configuración para autenticación API (cliente)
+
+En `LaravelCatalogo/.env` define (o deja los valores por defecto):
+
+```env
+AUTH_API_URL=http://127.0.0.1:8001/api
+AUTH_API_REGISTER_ENDPOINT=/register
+AUTH_API_LOGIN_ENDPOINT=/login
+AUTH_API_LOGOUT_ENDPOINT=/logout
+AUTH_API_PROFILE_ENDPOINT=/profile
+AUTH_API_AVATAR_ENDPOINT=/profile/avatar
+AUTH_API_PASSWORD_ENDPOINT=/profile/password
+```
+
+> Si tu backend usa rutas distintas, solo ajusta estos endpoints en el `.env` del cliente.

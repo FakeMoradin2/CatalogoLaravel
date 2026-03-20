@@ -41,6 +41,28 @@
                     <a href="{{ route('contacto') }}" class="text-slate-600 hover:text-indigo-600 font-medium transition {{ request()->routeIs('contacto') ? 'text-indigo-600' : '' }}">
                         Contacto
                     </a>
+                    @php
+                        $authUser = session('auth_user', []);
+                        $authToken = session('auth_token');
+                    @endphp
+                    @if($authToken)
+                        <a href="{{ route('profile.show') }}" class="text-slate-600 hover:text-indigo-600 font-medium transition {{ request()->routeIs('profile.*') ? 'text-indigo-600' : '' }}">
+                            {{ $authUser['name'] ?? $authUser['email'] ?? 'Mi perfil' }}
+                        </a>
+                        <form action="{{ route('auth.logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition">
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('auth.login.form') }}" class="text-slate-600 hover:text-indigo-600 font-medium transition {{ request()->routeIs('auth.login.*') ? 'text-indigo-600' : '' }}">
+                            Iniciar sesión
+                        </a>
+                        <a href="{{ route('auth.register.form') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition">
+                            Crear cuenta
+                        </a>
+                    @endif
                 </nav>
             </div>
         </div>
@@ -48,6 +70,29 @@
 
     {{-- Contenido principal --}}
     <main class="flex-1 container mx-auto px-4 py-8">
+        @if(session('success'))
+            <div class="mb-6 p-4 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-200">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 p-4 rounded-lg bg-red-100 text-red-800 border border-red-200">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="mb-6 p-4 rounded-lg bg-red-100 text-red-800 border border-red-200">
+                <p class="font-semibold mb-2">Revisa los siguientes campos:</p>
+                <ul class="list-disc list-inside space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         @yield('content')
     </main>
 

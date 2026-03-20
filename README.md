@@ -1,6 +1,6 @@
 # Laravel Catalogo
 
-Sitio web informativo con catálogo de productos y carrito de compras. Consume productos desde la API propia (proyecto **CatalogoAPI**).
+Sitio web con catálogo de productos, carrito de compras público y módulo de usuarios autenticados por token. Consume datos desde la API propia (proyecto **CatalogoAPI**).
 
 ## Estructura
 
@@ -31,7 +31,7 @@ php artisan serve
 
 Abre http://127.0.0.1:8000 en el navegador. (El backend debe estar corriendo en el puerto 8001.)
 
-## Páginas
+## Páginas públicas
 
 - **Inicio** (`/`)
 - **Nosotros** (`/nosotros`)
@@ -40,8 +40,29 @@ Abre http://127.0.0.1:8000 en el navegador. (El backend debe estar corriendo en 
 - **Carrito** (`/carrito`)
 - **Contacto** (`/contacto`)
 
+## Páginas de usuario (requieren autenticación API)
+
+- **Registro** (`/registro`)
+- **Login** (`/login`)
+- **Perfil** (`/perfil`) con actualización separada de:
+  - Datos generales
+  - Imagen de perfil
+  - Contraseña
+
+## Configuración de endpoints de autenticación
+
+En `.env` del cliente:
+
+- `AUTH_API_URL`
+- `AUTH_API_REGISTER_ENDPOINT`
+- `AUTH_API_LOGIN_ENDPOINT`
+- `AUTH_API_LOGOUT_ENDPOINT`
+- `AUTH_API_PROFILE_ENDPOINT`
+- `AUTH_API_AVATAR_ENDPOINT`
+- `AUTH_API_PASSWORD_ENDPOINT`
+
 ## Estructura
 
 - **Layout**: `resources/views/layouts/app.blade.php` (header, menú, footer)
-- **Controladores**: `PageController`, `ProductoController`, `CarritoController`
+- **Controladores**: `PageController`, `ProductoController`, `CarritoController`, `AuthController`, `ProfileController`
 - **API**: CatalogoAPI (propia, puerto 8001)
