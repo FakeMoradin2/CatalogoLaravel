@@ -1,6 +1,6 @@
 # Laravel Catalogo
 
-Sitio web con catálogo de productos, carrito de compras público y módulo de usuarios autenticados por token. Consume datos desde la API propia (proyecto **CatalogoAPI**).
+Sitio web con catálogo de productos y carrito público, más módulos privados de usuarios y pedidos autenticados por token. Consume datos desde la API propia (proyecto **CatalogoAPI**).
 
 ## Estructura
 
@@ -48,6 +48,8 @@ Abre http://127.0.0.1:8000 en el navegador. (El backend debe estar corriendo en 
   - Datos generales
   - Imagen de perfil
   - Contraseña
+- **Pedidos** (`/pedidos`)
+- **Detalle de pedido** (`/pedidos/{id}`)
 
 ## Configuración de endpoints de autenticación
 
@@ -61,8 +63,16 @@ En `.env` del cliente:
 - `AUTH_API_AVATAR_ENDPOINT`
 - `AUTH_API_PASSWORD_ENDPOINT`
 
+## Configuración de endpoints de pedidos
+
+- `ORDERS_API_URL`
+- `ORDERS_API_INDEX_ENDPOINT`
+- `ORDERS_API_STORE_ENDPOINT`
+- `ORDERS_API_SHOW_ENDPOINT`
+- `ORDERS_API_CANCEL_ENDPOINT`
+
 ## Estructura
 
 - **Layout**: `resources/views/layouts/app.blade.php` (header, menú, footer)
-- **Controladores**: `PageController`, `ProductoController`, `CarritoController`, `AuthController`, `ProfileController`
+- **Controladores**: `PageController`, `ProductoController`, `CarritoController`, `AuthController`, `ProfileController`, `PedidoController`
 - **API**: CatalogoAPI (propia, puerto 8001)

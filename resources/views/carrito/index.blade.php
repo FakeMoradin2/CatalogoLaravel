@@ -94,6 +94,18 @@
                     Total: <span class="text-indigo-600">${{ number_format($total, 2) }}</span>
                 </div>
                 <div class="flex flex-wrap gap-3">
+                    @if(session('auth_token'))
+                        <form action="{{ route('pedidos.store') }}" method="POST" onsubmit="return confirm('¿Confirmas crear el pedido con los productos actuales del carrito?')">
+                            @csrf
+                            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition">
+                                Crear pedido
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('auth.login.form') }}" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition">
+                            Inicia sesión para pedir
+                        </a>
+                    @endif
                     <form action="{{ route('carrito.vaciar') }}" method="POST" onsubmit="return confirm('¿Vaciar completamente el carrito?')">
                         @csrf
                         <button type="submit" class="px-4 py-2 text-slate-600 hover:text-red-600 font-medium transition border border-slate-300 rounded-lg hover:border-red-300">

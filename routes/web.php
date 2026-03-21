@@ -3,6 +3,7 @@
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductoController;
 use Illuminate\Support\Facades\Route;
@@ -35,4 +36,9 @@ Route::middleware('api.auth')->group(function (): void {
     Route::put('/perfil', [ProfileController::class, 'updateInfo'])->name('profile.update.info');
     Route::post('/perfil/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.update.avatar');
     Route::put('/perfil/password', [ProfileController::class, 'updatePassword'])->name('profile.update.password');
+
+    Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
+    Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedidos.store');
+    Route::get('/pedidos/{id}', [PedidoController::class, 'show'])->name('pedidos.show');
+    Route::put('/pedidos/{id}/cancelar', [PedidoController::class, 'cancel'])->name('pedidos.cancel');
 });

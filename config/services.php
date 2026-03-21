@@ -49,4 +49,12 @@ return [
         'password' => env('AUTH_API_PASSWORD_ENDPOINT', '/profile/password'),
     ],
 
+    'orders_api' => [
+        'url' => env('ORDERS_API_URL', env('AUTH_API_URL', env('PRODUCTOS_API_URL', 'http://127.0.0.1:8001/api'))),
+        'index' => env('ORDERS_API_INDEX_ENDPOINT', '/orders'),
+        'store' => env('ORDERS_API_STORE_ENDPOINT', '/orders'),
+        'show' => env('ORDERS_API_SHOW_ENDPOINT', '/orders/{id}'),
+        'cancel' => env('ORDERS_API_CANCEL_ENDPOINT', '/orders/{id}/cancel'),
+    ],
+
 ];
