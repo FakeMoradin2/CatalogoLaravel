@@ -24,7 +24,9 @@
                         <tr class="text-left text-sm font-medium text-slate-600">
                             <th class="px-4 py-3">Número</th>
                             <th class="px-4 py-3">Fecha</th>
-                            <th class="px-4 py-3">Estado</th>
+                            <th class="px-4 py-3">Pedido</th>
+                            <th class="px-4 py-3">Pago</th>
+                            <th class="px-4 py-3">Cupón</th>
                             <th class="px-4 py-3">Total</th>
                             <th class="px-4 py-3"></th>
                         </tr>
@@ -36,9 +38,25 @@
                             <td class="px-4 py-4 text-slate-700">{{ $order['fecha'] ?? '-' }}</td>
                             <td class="px-4 py-4">
                                 @php $cancelado = ($order['estado'] ?? '') === 'cancelado'; @endphp
-                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold {{ $cancelado ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700' }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold {{ $cancelado ? 'bg-red-100 text-red-700' : (($order['estado'] ?? '') === 'pagado' ? 'bg-indigo-100 text-indigo-800' : 'bg-emerald-100 text-emerald-700') }}">
                                     {{ ucfirst($order['estado'] ?? 'desconocido') }}
                                 </span>
+                            </td>
+                            <td class="px-4 py-4">
+                                @php $ps = $order['payment_status'] ?? 'pendiente'; @endphp
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold {{ $ps === 'pagado' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
+                                    {{ ucfirst($ps) }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-4 text-slate-700 text-sm">
+                                @if(!empty($order['cupon_codigo']))
+                                    <span class="font-mono text-xs">{{ $order['cupon_codigo'] }}</span>
+                                    @if(($order['descuento'] ?? 0) > 0)
+                                        <span class="block text-emerald-700 text-xs">−${{ number_format((float) $order['descuento'], 2) }}</span>
+                                    @endif
+                                @else
+                                    <span class="text-slate-400">—</span>
+                                @endif
                             </td>
                             <td class="px-4 py-4 font-semibold text-indigo-600">${{ number_format((float) ($order['total'] ?? 0), 2) }}</td>
                             <td class="px-4 py-4 text-right">

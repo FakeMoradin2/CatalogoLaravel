@@ -40,11 +40,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php $total = 0; @endphp
+                        @php
+                            $total = 0;
+                            foreach ($carrito as $item) {
+                                $total += $item['price'] * $item['quantity'];
+                            }
+                            $cuponResumen = session('carrito_cupon_resumen');
+                            $cuponCodigo = session('carrito_cupon_codigo');
+                        @endphp
                         @foreach($carrito as $item)
                         @php
                             $subtotal = $item['price'] * $item['quantity'];
-                            $total += $subtotal;
                         @endphp
                         <tr class="border-b border-slate-100 hover:bg-slate-50/50">
                             <td class="px-4 py-4">
@@ -89,9 +95,38 @@
                 </table>
             </div>
 
+            @if(session('auth_token'))
+                <div class="px-4 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                    <form action="{{ route('carrito.cupon.aplicar') }}" method="POST" class="flex flex-col sm:flex-row gap-2 sm:items-center flex-1 max-w-xl">
+                        @csrf
+                        <label class="text-sm font-medium text-slate-700 sr-only" for="coupon_code">Código de descuento</label>
+                        <input type="text" name="coupon_code" id="coupon_code" placeholder="Código de descuento (ej. DESC10)"
+                            class="flex-1 min-w-0 px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                            value="{{ old('coupon_code', $cuponCodigo ?? '') }}" autocomplete="off">
+                        <button type="submit" class="px-4 py-2 bg-slate-800 text-white text-sm font-medium rounded-lg hover:bg-slate-900 transition whitespace-nowrap">
+                            Aplicar cupón
+                        </button>
+                    </form>
+                    @if(!empty($cuponCodigo))
+                        <form action="{{ route('carrito.cupon.quitar') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="text-sm text-red-600 hover:text-red-800 font-medium">Quitar cupón</button>
+                        </form>
+                    @endif
+                </div>
+            @endif
+
             <div class="px-4 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div class="text-lg font-bold text-slate-800">
-                    Total: <span class="text-indigo-600">${{ number_format($total, 2) }}</span>
+                <div class="text-slate-800 space-y-1">
+                    @if(session('auth_token') && is_array($cuponResumen) && isset($cuponResumen['subtotal']))
+                        <p class="text-sm">Subtotal: <span class="font-semibold">${{ number_format((float) $cuponResumen['subtotal'], 2) }}</span></p>
+                        @if (($cuponResumen['descuento'] ?? 0) > 0)
+                            <p class="text-sm text-emerald-700">Descuento ({{ $cuponResumen['cupon_codigo'] ?? $cuponCodigo }}): <span class="font-semibold">−${{ number_format((float) $cuponResumen['descuento'], 2) }}</span></p>
+                        @endif
+                        <p class="text-lg font-bold">Total a pagar: <span class="text-indigo-600">${{ number_format((float) ($cuponResumen['total'] ?? $total), 2) }}</span></p>
+                    @else
+                        <p class="text-lg font-bold">Total: <span class="text-indigo-600">${{ number_format($total, 2) }}</span></p>
+                    @endif
                 </div>
                 <div class="flex flex-wrap gap-3">
                     @if(session('auth_token'))

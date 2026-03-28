@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Concerns\RemoteApiHttp;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    use RemoteApiHttp;
+
     public function show(Request $request): View|RedirectResponse
     {
         $response = $this->apiRequest($request)->get($this->endpoint('profile'));
@@ -144,12 +146,12 @@ class ProfileController extends Controller
 
     private function apiRequest(Request $request)
     {
-        return Http::acceptJson()->withToken((string) $request->session()->get('auth_token'));
+        return $this->remoteHttp()->withToken((string) $request->session()->get('auth_token'));
     }
 
     private function endpoint(string $key): string
     {
-        $base = rtrim((string) config('services.auth_api.url', 'http://127.0.0.1:8001/api'), '/');
+        $base = rtrim((string) config('services.auth_api.url', 'http://127.0.0.1:8000/api'), '/');
         $path = (string) config("services.auth_api.{$key}");
 
         return $base.'/'.ltrim($path, '/');

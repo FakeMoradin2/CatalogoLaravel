@@ -4,6 +4,7 @@ use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\PedidoPagoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductoController;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,9 @@ Route::middleware('api.guest')->group(function (): void {
 });
 
 Route::middleware('api.auth')->group(function (): void {
+    Route::post('/carrito/cupon', [CarritoController::class, 'aplicarCupon'])->name('carrito.cupon.aplicar');
+    Route::post('/carrito/cupon/quitar', [CarritoController::class, 'quitarCupon'])->name('carrito.cupon.quitar');
+
     Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
     Route::get('/perfil', [ProfileController::class, 'show'])->name('profile.show');
@@ -41,4 +45,10 @@ Route::middleware('api.auth')->group(function (): void {
     Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedidos.store');
     Route::get('/pedidos/{id}', [PedidoController::class, 'show'])->name('pedidos.show');
     Route::put('/pedidos/{id}/cancelar', [PedidoController::class, 'cancel'])->name('pedidos.cancel');
+
+    Route::get('/pedidos/{id}/pagar', [PedidoPagoController::class, 'show'])->name('pedidos.pagar');
+    Route::post('/pedidos/{id}/pago/checkout', [PedidoPagoController::class, 'checkout'])->name('pedidos.pago.checkout');
+    Route::get('/pedidos/{id}/pago/regreso', [PedidoPagoController::class, 'checkoutReturn'])->name('pedidos.pago.checkout.return');
+    Route::post('/pedidos/{id}/pago/preparar', [PedidoPagoController::class, 'prepare'])->name('pedidos.pago.prepare');
+    Route::post('/pedidos/{id}/pago/confirmar', [PedidoPagoController::class, 'confirm'])->name('pedidos.pago.confirm');
 });

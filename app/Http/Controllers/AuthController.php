@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Concerns\RemoteApiHttp;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
 class AuthController extends Controller
 {
+    use RemoteApiHttp;
+
     public function showRegisterForm(): View
     {
         return view('auth.register');
@@ -36,7 +39,13 @@ class AuthController extends Controller
             'password_confirmation' => (string) $request->input('password_confirmation'),
         ]);
 
-        $response = Http::acceptJson()->post($this->endpoint('register'), $payload);
+        try {
+            $response = $this->remoteHttp()->post($this->endpoint('register'), $payload);
+        } catch (ConnectionException $e) {
+            return back()
+                ->withInput($request->except('password', 'password_confirmation'))
+                ->with('error', $this->apiUnreachableMessage());
+        }
 
         if ($response->failed()) {
             return back()
@@ -69,7 +78,13 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $response = Http::acceptJson()->post($this->endpoint('login'), $payload);
+        try {
+            $response = $this->remoteHttp()->post($this->endpoint('login'), $payload);
+        } catch (ConnectionException $e) {
+            return back()
+                ->withInput($request->only('email'))
+                ->with('error', $this->apiUnreachableMessage());
+        }
 
         if ($response->failed()) {
             return back()
@@ -95,12 +110,14 @@ class AuthController extends Controller
         $token = (string) $request->session()->get('auth_token', '');
 
         if ($token !== '') {
-            Http::acceptJson()
-                ->withToken($token)
-                ->post($this->endpoint('logout'));
+            try {
+                $this->remoteHttp()->withToken($token)->post($this->endpoint('logout'));
+            } catch (ConnectionException $e) {
+                // La sesión local se cierra aunque la API no responda.
+            }
         }
 
-        $request->session()->forget(['auth_token', 'auth_user']);
+        $request->session()->forget(['auth_token', 'auth_user', 'carrito_cupon_codigo', 'carrito_cupon_resumen']);
         $request->session()->regenerateToken();
 
         return redirect()->route('inicio')->with('success', 'Has cerrado sesión.');
@@ -108,7 +125,7 @@ class AuthController extends Controller
 
     private function endpoint(string $key): string
     {
-        $base = rtrim((string) config('services.auth_api.url', 'http://127.0.0.1:8001/api'), '/');
+        $base = rtrim((string) config('services.auth_api.url', 'http://127.0.0.1:8000/api'), '/');
         $path = (string) config("services.auth_api.{$key}");
 
         return $base.'/'.ltrim($path, '/');
@@ -163,5 +180,10 @@ class AuthController extends Controller
         }
 
         return $fallback;
+    }
+
+    private function apiUnreachableMessage(): string
+    {
+        return 'No se pudo conectar con CatalogoAPI. Comprueba que esté en ejecución (p. ej. php artisan serve --port=8000 en la carpeta CatalogoAPI) y que en .env las URLs PRODUCTOS_API_URL, AUTH_API_URL y ORDERS_API_URL apunten a ese puerto. No uses el mismo puerto que el catálogo web: php artisan serve solo procesa una petición a la vez y el login se bloquearía.';
     }
 }

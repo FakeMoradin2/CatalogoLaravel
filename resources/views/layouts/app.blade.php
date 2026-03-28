@@ -46,7 +46,7 @@
                         $authToken = session('auth_token');
                     @endphp
                     @if($authToken)
-                        <a href="{{ route('pedidos.index') }}" class="text-slate-600 hover:text-indigo-600 font-medium transition {{ request()->routeIs('pedidos.*') ? 'text-indigo-600' : '' }}">
+                        <a href="{{ route('pedidos.index') }}" class="text-slate-600 hover:text-indigo-600 font-medium transition {{ request()->routeIs('pedidos.*') ? 'text-indigo-600' : '' }}" title="Pedidos y estado de pago">
                             Pedidos
                         </a>
                         <a href="{{ route('profile.show') }}" class="text-slate-600 hover:text-indigo-600 font-medium transition {{ request()->routeIs('profile.*') ? 'text-indigo-600' : '' }}">
